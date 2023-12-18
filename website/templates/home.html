@@ -1,0 +1,67 @@
+{% extends "base.html" %} 
+{% block title %}Notes{% endblock %}
+{% block content %}
+<h1 align="center">Notes and Pictures</h1>
+<div class="row">
+        <div class="column" style="background-color:#c9baeb;">
+            <h2 align="center">Notes</h2>
+        </div>
+        <div class="column" style="background-color:#85ceb2;">
+            <h2 align="center">Pictures</h2>
+        </div>
+</div>
+
+<ul class="list-group list-group-flush" id="notes">
+    {% for note in user.notes %}
+    <li class="list-group-item">
+    <div class="row">
+        <div class="column">
+            <form id = "editForm_{{ note.id }}" method="POST" enctype=multipart/form-data>
+                <textarea id="txtEdit_{{ note.id }}" name="txtEdit" class="form-control flex-grow-1" onkeyup="EnableDisable(this, {{ note.id }})">
+                    {{ note.data}}
+                </textarea>
+                <hr />
+                <input id="btnSubmit_{{ note.id }}" type="button" value="Save Changes" disabled="disabled" onclick="editNote({{ note.id }})"/>
+            </form>
+        </div>
+        <div class="column">
+            {% for image in note.images %}
+                <div class="img-wrap">
+                    <button type="button" class="closebtn" onclick="deleteImg('{{ image.id }}', '{{ note.id }}')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <img src="{{ url_for('static', filename='uploads/' + image.name) }}" width="200" height="200"/>
+                </div>
+            {% endfor %}
+            <hr/>
+                <form id = "addImgForm_{{ note.id }}"  method="POST" enctype="multipart/form-data">
+                    <input id="btnAddImage_{{ note.id }}" name="btnAddImage" accept="image/*" type="file" multiple />
+                    <button id="btnSubmitImg" type="button" onclick="addImages({{ note.id }})">
+                        <span aria-hidden="true">Add Images</span>
+                    </button>
+                </form>
+        </div>
+        <button type="button" class="close" onclick="deleteNoteandImages({{ note.id }})">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+        </li>
+    {% endfor %}
+</ul>
+<br />
+<form id = "submitForm" method="POST" enctype=multipart/form-data>
+    <h3 align="center">New Row</h3>
+    <div class="row">
+        <div class="column">
+            <textarea name="note" id="note" class="form-control"></textarea>
+        </div>
+        <div class="column" align="center">
+            <input type=file name=file accept="image/*" multiple>
+        </div>
+    </div>
+        <br />
+        <div align="center">
+            <button type="submit" class="btn btn-primary">Add Note & Pictures</button>
+        </div>    
+</form>
+{% endblock%}
